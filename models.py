@@ -9,6 +9,8 @@ class Usuario(BaseModel):
     hashed_password: str
 
 class UsuarioDB(Base):
+    __tablename__ = "usuarios"
+
     id = Column(Integer, primary_key= True, index = True )
     username = Column(String, unique = True)
     email = Column(String)
@@ -22,6 +24,8 @@ class Repuesto(BaseModel):
     stock: int
 
 class RepuestoDB(Base):
+    __tablename__ = "repuesto"
+
     id = Column(Integer, primary_key= True, index = True )
     marca = Column(String)
     modelo = Column(String)
