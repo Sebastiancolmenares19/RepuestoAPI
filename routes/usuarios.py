@@ -1,115 +1,31 @@
 from fastapi import APIRouter, Depends,HTTPException
 from sqlalchemy.orm import Session
 from database import get_db
-from models import Usuario,UsuarioDB
+from models import UsuarioDB
+from schemas import UsuarioCreate, UsuarioResponse, UsuarioUpdate
+from services.usuarios import create_usuario, delete_usuario, get_usuarios, get_usuario, update_usuario
 
 router = APIRouter(
     prefix = "/usuarios",
     tags = ["usuarios"]
 )
 
-@router.post("/")
-def crear_usuario(usuario: Usuario, db: Session = Depends(get_db)):
+@router.post("/", response_model=UsuarioResponse)
+def crear_usuario(usuario: UsuarioCreate, db: Session = Depends(get_db)):
+    return create_usuario(db, usuario)
 
-    usuario_existente = db.query(UsuarioDB)\
-    .filter(UsuarioDB.username == usuario.username)\
-    .first()
-
-    if usuario_existente:
-        raise HTTPException(
-            status_code=400,
-            detail="El usuario ya existe"
-    )
-
-    nuevo_usuario = UsuarioDB(
-        username = usuario.username,
-        email = usuario.email,
-        hashed_password = usuario.hashed_password
-    )
-
-    db.add(nuevo_usuario)
-    db.commit()
-    db.refresh(nuevo_usuario)
-
-    return {
-        "mensaje" : "Usuario creado"
-    }
-
-@router.get("/")
+@router.get("/", response_model =list[UsuarioResponse])
 def obtener_usuarios(db: Session = Depends(get_db)):
-    usuario = db.query(UsuarioDB).all()
+    return get_usuarios(db)
 
-    return [
-        {
-            "id": s.id,
-            "username": s.username,
-            "email": s.email,
-            "hashed_password": s.hashed_password
-        }
-
-        for s in usuario
-    ]
-
-@router.get("/{usuario_id}")
+@router.get("/{usuario_id}", response_model= UsuarioResponse)
 def obtener_usuario(usuario_id: int, db:Session = Depends(get_db)):
-    usuario = db.query(UsuarioDB)\
-    .filter(UsuarioDB.id == usuario_id)\
-    .first()
+    return get_usuario(db, usuario_id) 
 
-    if not usuario:
-        raise HTTPException(
-            status_code= 404,
-            detail =f"Usuario no encontrado"
-        )
-    
-    return {
-        "id": usuario.id,
-        "username": usuario.username,
-        "email": usuario.email,
-        "hashed_password": usuario.hashed_password
-    }
-
-@router.put("/{usuario_id}")
-def actualizar_usuario(usuario_id: int, data: Usuario, db: Session = Depends(get_db)):
-    
-    usuario = db.query(UsuarioDB)\
-    .filter(UsuarioDB.id == usuario_id)\
-    .first()
-
-    if not usuario:
-        raise HTTPException(
-            status_code=404,
-            detail=f"Repuesto con id {usuario_id} no encontrado"
-        )
-    
-    #actualizar campos
-    usuario.username = data.username
-    usuario.email = data.email
-    usuario.hashed_password = data.hashed_password
-
-    db.commit()
-    db.refresh(usuario)
-
-    return {
-        "mensaje" : "Usuario actualizado"
-    }
+@router.put("/{usuario_id}", response_model=UsuarioResponse)
+def actualizar_usuario(usuario_id: int, user: UsuarioUpdate, db: Session = Depends(get_db)):   
+    return update_usuario(db, usuario_id, user)
 
 @router.delete("/{usuario_id}")
 def eliminar_usuario(usuario_id: int, db: Session = Depends(get_db)):
-
-    usuario = db.query(UsuarioDB)\
-    .filter(UsuarioDB.id == usuario_id)\
-    .first()
-
-    if not usuario:
-        raise HTTPException(
-            status_code=404,
-            detail=f"Usuario con id {usuario_id} no encontrado"
-        )
-    
-    db.delete(usuario)
-    db.commit()
-
-    return{
-        "mensaje" : "Usuario eliminado"
-    }
+    return delete_usuario(db, usuario_id)

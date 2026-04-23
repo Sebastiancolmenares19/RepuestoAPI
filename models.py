@@ -1,12 +1,6 @@
 from database import Base
-from sqlalchemy import Column, Integer, String , Float 
-from pydantic import BaseModel  
-
-class Usuario(BaseModel):
-    id: int
-    username: str
-    email: set
-    hashed_password: str
+from sqlalchemy import Column, Integer, String , Float, ForeignKey
+from sqlalchemy.orm import relationship
 
 class UsuarioDB(Base):
     __tablename__ = "usuarios"
@@ -16,13 +10,6 @@ class UsuarioDB(Base):
     email = Column(String)
     hashed_password = Column(String)
 
-class Repuesto(BaseModel):
-    id: int
-    marca: str
-    modelo: str
-    precio: float
-    stock: int
-
 class RepuestoDB(Base):
     __tablename__ = "repuesto"
 
@@ -31,3 +18,15 @@ class RepuestoDB(Base):
     modelo = Column(String)
     precio = Column(Float)
     stock = Column(Integer)
+
+    categoria_id = Column(Integer, ForeignKey("categorias.id"))
+    categoria = relationship("CategoriaDB", back_populates="repuestos")
+
+
+class CategoriaDB(Base):
+    __tablename__ = "categorias"
+
+    id = Column(Integer, primary_key= True, index= True)
+    nombre = Column(String, unique=True)
+
+    repuestos = relationship("RepuestoDB", back_populates="categoria")

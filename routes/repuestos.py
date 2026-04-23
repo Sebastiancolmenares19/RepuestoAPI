@@ -1,112 +1,35 @@
 from fastapi import APIRouter, Depends,HTTPException
 from sqlalchemy.orm import Session
+from crud.repuestos import get_repuesto, get_repuestos
 from database import get_db
-from models import Repuesto, RepuestoDB
+from models import RepuestoDB
+from schemas import RepuestoCreate, RepuestoResponse, RepuestoUpdate
+from services.repuestos import create_repuesto, delete_repuesto, update_repuesto
 
 router = APIRouter(
     prefix="/repuestos",
     tags=["repuestos"]
 )
 
-@router.post("/")
-def crear_repuesto(repuesto: Repuesto, db: Session = Depends(get_db)):
-    nuevo_repuesto = RepuestoDB(
-        marca = repuesto.marca,
-        modelo = repuesto.modelo,
-        precio = repuesto.precio,
-        stock = repuesto.stock
-    )
+@router.post("/", response_model=RepuestoResponse)
+def crear_repuesto(repuesto: RepuestoCreate, db: Session = Depends(get_db)):
+    return create_repuesto(db, repuesto)
 
-    db.add(nuevo_repuesto)
-    db.commit()
-    db.refresh(nuevo_repuesto)
-
-    return {
-        "mensaje": "Repuesto creado"
-    }
-
-@router.get("/")
+@router.get("/", response_model=list[RepuestoResponse])
 def obtener_respuestos(db:Session = Depends(get_db)):
-    repuestos = db.query(RepuestoDB).all()
+    return get_repuestos(db)
 
-    return [
-        {
-           "id": r.id,
-            "marca": r.marca,
-            "modelo": r.modelo,
-            "precio": r.precio,
-            "stock": r.stock 
-        }
+@router.get("/{repuesto_id}", response_model=RepuestoResponse)
+def obtener_repuesto(repuesto_id: int, db: Session = Depends(get_db)):    
+    return get_repuesto(db,repuesto_id)
 
-        for r in repuestos
-    ]
-
-@router.get("/{repuesto_id}")
-def obtener_repuesto(repuesto_id: int, db: Session = Depends(get_db)):
-    
-    repuesto = db.query(RepuestoDB)\
-    .filter(RepuestoDB.id == repuesto_id)\
-    .first()
-
-    if not repuesto:
-        raise HTTPException(
-            status_code=404,
-            detail=f"Repuesto con id {repuesto_id} no encontrado"
-        )
-    
-    return {
-        "id": repuesto.id,
-        "marca": repuesto.marca,
-        "modelo": repuesto.modelo,
-        "precio": repuesto.precio,
-        "stock": repuesto.stock
-    }
-
-@router.put("/{repuesto_id}")
-def actualizar_repuesto(repuesto_id: int, data: Repuesto, db: Session = Depends(get_db)):
-    
-    repuesto = db.query(RepuestoDB)\
-    .filter(RepuestoDB.id == repuesto_id)\
-    .first()
-
-    if not repuesto:
-        raise HTTPException(
-            status_code=404,
-            detail=f"Repuesto con id {repuesto_id} no encontrado"
-        )
-    
-    #actualizar campos
-    repuesto.nombre = data.nombre
-    repuesto.marca = data.marca
-    repuesto.precio = data.precio
-    repuesto.stock = data.stock
-
-    db.commit()
-    db.refresh(repuesto)
-
-    return {
-        "mensaje" : "Repuesto actualizado"
-    }
+@router.put("/{repuesto_id}", response_model = RepuestoResponse)
+def actualizar_repuesto(repuesto_id: int, repuesto: RepuestoUpdate, db: Session = Depends(get_db)):   
+    return update_repuesto(db, repuesto_id, repuesto)
 
 @router.delete("/{repuesto_id}")
 def eliminar_repuesto(repuesto_id: int, db: Session = Depends(get_db)):
-
-    repuesto = db.query(RepuestoDB)\
-    .filter(RepuestoDB.id == repuesto_id)\
-    .first()
-
-    if not repuesto:
-        raise HTTPException(
-            status_code=404,
-            detail=f"Repuesto con id {repuesto_id} no encontrado"
-        )
-    
-    db.delete(repuesto)
-    db.commit()
-
-    return{
-        "mensaje" : "Repuesto eliminado"
-    }
+    return delete_repuesto(db, repuesto_id)
 
 
 
