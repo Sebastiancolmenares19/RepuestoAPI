@@ -40,6 +40,14 @@ class RepuestoUpdate(BaseModel):
     precio: Optional[int] = None
     stock: Optional[int] = None
 
-
-class Categoria(BaseModel):
+class CategoriaCreate(BaseModel):
     nombre: str
+
+class CategoriaResponse(BaseModel):
+    nombre: str
+    
+    class Config: 
+        from_attributes = True
+
+class CategoriaUpdate(BaseModel):
+    nombre: Optional[str] = None
