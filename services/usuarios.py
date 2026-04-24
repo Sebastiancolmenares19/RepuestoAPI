@@ -1,4 +1,4 @@
-from crud.usuarios import create, delete, get_by_username, refresh, save, get_by_id
+from crud.usuarios import create, delete, get_by_username, get_by_id
 from crud.usuarios import get_usuarios as get_usuarios_crud
 from crud.usuarios import get_usuario as get_usuario_crud
 from exceptions import AlreadyExist, NotFound
@@ -11,7 +11,10 @@ def create_usuario(db, user):
     if usuario_existente:
         raise AlreadyExist()
     
-    return create(db, user)
+    nuevo = create(db,user)
+    db.commit()
+    db.refresh(nuevo)
+    return nuevo
 
 
 def get_usuarios(db):
@@ -31,15 +34,16 @@ def update_usuario(db, usuario_id, user):
     if user.username:
         existing = get_by_username(db, user.username)
         if existing and existing.id != usuario_id:
-            raise AlreadyExist
+            raise AlreadyExist()
     
     data = user.model_dump(exclude_unset=True)
 
     for key, value in data.items():
         setattr(usuario, key, value)
 
-    save(db)
-    return refresh(db, usuario)
+    db.commit()
+    db.refresh(usuario)
+    return usuario
 
 def delete_usuario(db, usuario_id):
 
@@ -49,5 +53,6 @@ def delete_usuario(db, usuario_id):
         raise NotFound()
     
     delete(db,usuario)
+    db.commit()
     
     return {"message": "Usuario eliminado"}

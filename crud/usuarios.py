@@ -29,18 +29,7 @@ def create(db, usuario):
     )
 
     db.add(nuevo_usuario)
-    db.commit()
-    db.refresh(nuevo_usuario)
-
     return nuevo_usuario
-
-def save(db):
-    db.commit()
-
-def refresh(db,obj):
-    db.refresh(obj)
-    return obj
 
 def delete(db, usuario):
     db.delete(usuario)
-    db.commit()

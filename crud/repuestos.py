@@ -26,18 +26,8 @@ def create(db, repuesto):
     )
 
     db.add(nuevo_repuesto)
-    db.commit()
-    db.refresh(nuevo_repuesto)
-
     return nuevo_repuesto
-
-def save(db):
-    db.commit()
-
-def refresh(db,obj):
-    db.refresh(obj)
-    return obj
 
 def delete(db, repuesto):
     db.delete(repuesto)
-    db.commit()
+    
