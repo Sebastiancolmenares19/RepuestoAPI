@@ -9,8 +9,8 @@ def create_repuesto(db, repuesto_data):
 def get_repuestos(db):
     return get_repuestos_crud(db)
 
-def get_usuario(db):
-    return get_repuesto_crud(db)
+def get_repuesto(db, repuesto_id):
+    return get_repuesto_crud(db, repuesto_id)
 
 def update_repuesto(db, repuesto_id, repuesto_update):
     # Buscamos el repuesto por su ID real
