@@ -27,7 +27,7 @@ Este proyecto está estructurado con una separación clara de responsabilidades:
 1. Activar el entorno virtual:
 
 ```bash
-source .venv/bin/activate
+source venv/bin/activate
 ```
 
 2. Instalar dependencias:
