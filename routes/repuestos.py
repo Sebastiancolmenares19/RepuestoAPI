@@ -1,8 +1,7 @@
-from fastapi import APIRouter, Depends,HTTPException
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from crud.repuestos import get_repuesto, get_repuestos
 from database import get_db
-from models import RepuestoDB
 from schemas import RepuestoCreate, RepuestoResponse, RepuestoUpdate
 from services.repuestos import create_repuesto, delete_repuesto, update_repuesto
 
