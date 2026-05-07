@@ -1,2 +1,24 @@
+# Entorno virtual
 venv/
+env/
+.venv/
+
+# Variables de entorno
 .env
+
+# Archivos compilados Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Base de datos local
+*.db
+
+# IDEs
+.vscode/
+.idea/
+
+# Distribución
+dist/
+build/
+*.egg-info/
