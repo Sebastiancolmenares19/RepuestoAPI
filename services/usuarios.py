@@ -1,3 +1,4 @@
+from auth import hash_password
 from crud.usuarios import create, delete, get_by_username, get_by_id
 from crud.usuarios import get_usuarios as get_usuarios_crud
 from crud.usuarios import get_usuario as get_usuario_crud
@@ -11,7 +12,9 @@ def create_usuario(db, user):
     if usuario_existente:
         raise AlreadyExist()
     
-    nuevo = create(db,user)
+    hashed_password = hash_password(user.password)
+    
+    nuevo = create(db, user, hashed_password)
     db.commit()
     db.refresh(nuevo)
     return nuevo
@@ -37,6 +40,8 @@ def update_usuario(db, usuario_id, user):
             raise AlreadyExist()
     
     data = user.model_dump(exclude_unset=True)
+    if 'password' in data:
+        data['hashed_password'] = hash_password(data.pop('password'))
 
     for key, value in data.items():
         setattr(usuario, key, value)

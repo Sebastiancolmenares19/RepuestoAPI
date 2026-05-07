@@ -21,11 +21,11 @@ def get_usuario(db, usuario_id):
         raise NotFound()
     return usuario
 
-def create(db, usuario):
+def create(db, usuario, hashed_password: str):
     nuevo_usuario = UsuarioDB(
         username = usuario.username,
         email = usuario.email,
-        hashed_password = usuario.hashed_password
+        hashed_password = hashed_password
     )
 
     db.add(nuevo_usuario)

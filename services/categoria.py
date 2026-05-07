@@ -2,6 +2,7 @@ from crud.categorias import  get_by_id, get_by_nombre, get_categorias as get_cat
 from crud.categorias import get_categoria as get_categoria_crud
 from crud.categorias import delete
 from crud.categorias import create
+from crud.repuestos import get_repuestos_by_categoria
 from exceptions import AlreadyExist, NotFound
 
 
@@ -20,6 +21,13 @@ def get_categorias(db):
 
 def get_categoria(db, categoria_id):
     return get_categoria_crud(db, categoria_id)
+
+
+def get_repuestos_por_categoria(db, categoria_id):
+    if not get_categoria_crud(db, categoria_id):
+        raise NotFound()
+    return get_repuestos_by_categoria(db, categoria_id)
+
 
 def update_categoria(db, categoria_id, categoria_update):
 

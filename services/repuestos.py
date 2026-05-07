@@ -1,9 +1,13 @@
 from crud.repuestos import delete, get_by_id, create  
 from crud.repuestos import get_repuestos as get_repuestos_crud
 from crud.repuestos import get_repuesto as get_repuesto_crud
+from crud.categorias import get_by_id as get_categoria_by_id
 from exceptions import AlreadyExist, NotFound
 
 def create_repuesto(db, repuesto_data): 
+    if not get_categoria_by_id(db, repuesto_data.categoria_id):
+        raise NotFound()
+
     nuevo_repuesto = create(db, repuesto_data)
 
     db.commit()
@@ -24,6 +28,10 @@ def update_repuesto(db, repuesto_id, repuesto_update):
         raise NotFound()
     
     data = repuesto_update.model_dump(exclude_unset=True)
+    if 'categoria_id' in data:
+        if not get_categoria_by_id(db, data['categoria_id']):
+            raise NotFound()
+
     for key, value in data.items():
         setattr(repuesto, key, value)
 

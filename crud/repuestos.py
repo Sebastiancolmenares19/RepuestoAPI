@@ -10,6 +10,10 @@ def get_by_id(db, repuesto_id):
 def get_repuestos(db):
     return db.query(RepuestoDB).all()
 
+def get_repuestos_by_categoria(db, categoria_id: int):
+    return db.query(RepuestoDB).filter(RepuestoDB.categoria_id == categoria_id).all()
+
+
 def get_repuesto(db, repuesto_id):
     
     repuesto = get_by_id(db, repuesto_id)
