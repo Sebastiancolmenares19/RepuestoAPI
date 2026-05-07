@@ -54,7 +54,7 @@ uvicorn main:app --reload --host 0.0.0.0 --port 8000
 Actualmente la conexión se define en `database.py` como:
 
 ```python
-DATABASE_URL = "postgresql://postgres:admin123@localhost:5432/repuestodb"
+DATABASE_URL = "postgresql://usuario:contraseña@localhost:5432/repuestodb"
 ```
 
 Si deseas usar tu propia base de datos, reemplaza esta cadena con tu URL de PostgreSQL.
